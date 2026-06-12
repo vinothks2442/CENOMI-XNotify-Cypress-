@@ -8,35 +8,54 @@ pipeline {
 
     stages {
 
-        stage('Install Dependencies') {
-
+        stage('Checkout') {
             steps {
-
-                bat 'npm install'
-
+                checkout scm
             }
-
         }
 
-        stage('Verify Cypress') {
-
+        stage('Node & NPM Version') {
             steps {
-
-                bat 'npx cypress --version'
-
+                bat 'node --version'
+                bat 'npm --version'
             }
+        }
 
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm install'
+            }
+        }
+
+        stage('Verify Cypress Installation') {
+            steps {
+                bat 'npx cypress verify'
+                bat 'npx cypress info'
+            }
         }
 
         stage('Run Cypress Tests') {
-
             steps {
-
-                bat 'npx cypress run'
-
+                bat 'npx cypress run --headed --browser chrome'
             }
+        }
+    }
 
+    post {
+
+        always {
+
+            archiveArtifacts artifacts: 'cypress/screenshots/**/*', allowEmptyArchive: true
+
+            archiveArtifacts artifacts: 'cypress/videos/**/*', allowEmptyArchive: true
         }
 
+        success {
+            echo 'Cypress Execution Completed Successfully'
+        }
+
+        failure {
+            echo 'Cypress Execution Failed'
+        }
     }
 }

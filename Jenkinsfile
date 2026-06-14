@@ -36,17 +36,14 @@ pipeline {
 
         stage('Run Cypress Tests') {
             steps {
-                bat 'npx cypress run --headed --browser chrome'
+                bat 'npx cypress run --browser chrome'
             }
         }
     }
 
     post {
-
         always {
-
             archiveArtifacts artifacts: 'cypress/screenshots/**/*', allowEmptyArchive: true
-
             archiveArtifacts artifacts: 'cypress/videos/**/*', allowEmptyArchive: true
         }
 
